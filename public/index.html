@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta charset="utf-8">
+    <meta content="width=device-width" name="viewport">
+    <link href="style.css" rel="stylesheet">
+    <title>Ping Pod</title>
+  </head>
+  <body>
+    <div id="header">
+      <h1>Ping Pod</h1>
+    </div>
+    <div>
+      <form id="ping-form">
+        <input type="text" id="ping-input" placeholder="IP Address or Hostname">
+        <a href="#" id="ping-submit">Ping</a>
+      </form>
+      <img id="preload" src="images/loader.gif" style="display:none">
+      <p><h2 id="ping-status"></h2></p>
+    </div>
+    <div>
+      <p><h2 id="host-address"></h2></p>
+    </div>
+    <div>
+      <p><h2 id="IPv4-address"></h2></p>
+    </div>
+    <div>
+      <p><h2 id="hostname"></h2></p>
+    </div>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
