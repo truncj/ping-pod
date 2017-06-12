@@ -1,6 +1,0 @@
-FROM golang:1.7
-RUN mkdir -p /app
-WORKDIR /app
-ADD ./bin/main .
-ADD ./public ./public
-CMD ["./main"]
