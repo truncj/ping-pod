@@ -1,6 +1,6 @@
 # ping-pod
 
-A simple go application that allows the user to test interpod connectivity using ping. Now updated to include curl as well. 
+A simple go application that allows the user to test interpod connectivity using ping. Now updated to include curl. 
 
 ![alt text](https://media.giphy.com/media/l0Iy5gWIDuwePJ9EA/giphy.gif)
 
