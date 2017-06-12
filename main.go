@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net"
@@ -71,26 +72,85 @@ func HandleError(result interface{}, err error) (r interface{}) {
 	return result
 }
 
+type Result struct {
+	Status   string
+	Response string
+}
+
 func PingCommands(rw http.ResponseWriter, req *http.Request) {
 	fmt.Printf("%s\n", "PingCommands was called")
+	var status string
 	ip := mux.Vars(req)["ip"]
-	out, err := exec.Command("ping", ip, `-c 3`).Output()
+	cmd := exec.Command("ping", ip, "-c", "3")
 
-	if strings.Contains(string(out), " 0.0% packet loss") {
-		rw.Write([]byte("Success"))
-	} else {
-		rw.Write([]byte("Failure"))
-	}
+	var out bytes.Buffer
+	var stderr bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &stderr
+	err := cmd.Run()
 
 	if err != nil {
-		fmt.Printf("Failure")
+		status = "Failure"
+		//ubuntu result vs mac result
+	} else if strings.Contains(out.String(), " 0% packet loss") ||
+		strings.Contains(out.String(), "0.0% packet loss") {
+		status = "Success"
+	} else {
+		status = "Failure"
 	}
+
+	result := Result{status, out.String()}
+	js, err := json.Marshal(result)
+
+	if err != nil {
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+	}
+
+	fmt.Println("Result: " + out.String())
+
+	rw.Header().Set("Content-Type", "application/json")
+	rw.Write(js)
+}
+
+func CurlCommands(rw http.ResponseWriter, req *http.Request) {
+	fmt.Printf("%s\n", "CurlCommands was called")
+	var status string
+	ip := mux.Vars(req)["ip"]
+	cmd := exec.Command("curl", "-I", ip)
+
+	var out bytes.Buffer
+	var stderr bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &stderr
+	err := cmd.Run()
+
+	if err != nil {
+		status = "Failure"
+	} else if strings.Contains(out.String(), "200 OK") {
+		status = "Success"
+	} else {
+		status = "Failure"
+	}
+
+	result := Result{status, out.String()}
+	js, err := json.Marshal(result)
+
+	if err != nil {
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Println("Result: " + out.String())
+
+	rw.Header().Set("Content-Type", "application/json")
+	rw.Write(js)
 }
 
 func main() {
 	r := mux.NewRouter()
 	r.Path("/env").Methods("GET").HandlerFunc(EnvHandler)
 	r.Path("/ping/{ip}").Methods("GET").HandlerFunc(PingCommands)
+	r.Path("/curl/{ip}").Methods("GET").HandlerFunc(CurlCommands)
 
 	n := negroni.Classic()
 	n.UseHandler(r)

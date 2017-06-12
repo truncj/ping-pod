@@ -1,12 +1,13 @@
 $(document).ready(function() {
   var headerTitleElement = $("#header h1");
-  var formElement = $("#ping-form");
-  var submitElement = $("#ping-submit");
-  var inputElement = $("#ping-input");
+  var formElement = $("#host-form");
+  var pingSubmit = $("#ping-submit");
+  var curlSubmit = $("#curl-submit");
+  var inputElement = $("#host-input");
   var hostAddressElement = $("#host-address");
   var IPv4AddressElement = $("#IPv4-address");
   var hostnameElement = $("#hostname");
-  var pingStatus = $("#ping-status");
+  var hostStatus = $("#host-status");
   var preload = $("#preload");
 
   $.getJSON("env", function(result){
@@ -26,21 +27,39 @@ $(document).ready(function() {
   	});
   });
 
-  var handleSubmission = function(e) {
+  var handlePing = function(e) {
     e.preventDefault();
 
     $.get("ping/" + inputElement.val(), function(data){
-      console.log(data)
-      if(data == "Success"){
-        pingStatus.css("color", "#ADFF2F");
+      if(data.Status == "Success"){
+         hostStatus.css("color", "#ADFF2F");
       }else{
-        pingStatus.css("color", "#ff0000");
+        hostStatus.css("color", "#ff0000");
       }
+      hostStatus.text("Ping Result: " + data.Status);
       preload.css("display", "none")
-      pingStatus.text("Ping Result: " + data);
-
+      console.log("Ping Result: " + data.Response);
     });
-    return false;
+  }
+
+  var handleCurl = function(e) {
+    e.preventDefault();
+
+    $.get("curl/" + inputElement.val(), function(data){
+      if(data.Status == "Success"){
+         hostStatus.css("color", "#ADFF2F");
+      }else{
+        hostStatus.css("color", "#ff0000");
+      }
+      hostStatus.text("Curl Result: " + data.Status);
+      preload.css("display", "none")
+      console.log("Curl Result: " + data.Response);
+    }).fail(function(){
+      // Handle error here
+      hostStatus.css("color", "#ff0000");
+      preload.css("display", "none")
+      hostStatus.text("Please use ip:port formatting (eg. 127.0.0.1:3000)")
+    });
   }
 
   // colors = purple, blue, red, green, yellow
@@ -48,14 +67,21 @@ $(document).ready(function() {
   var randomColor = colors[Math.floor(5 * Math.random())];
   (function setElementsColor(color) {
     headerTitleElement.css("color", color);
-    submitElement.css("background-color", color);
+    pingSubmit.css("background-color", color);
+    curlSubmit.css("background-color", color);
     inputElement.css("box-shadow", "inset 0 0 0 2px" + color);
   })(randomColor);
 
-  submitElement.click(handleSubmission);
-  formElement.submit(handleSubmission);
-  submitElement.click(function() {
-      pingStatus.text("");
+  pingSubmit.click(handlePing);
+  curlSubmit.click(handleCurl);
+
+  pingSubmit.click(function() {
+      hostStatus.text("");
+      preload.css('display', 'inline');
+  });
+
+  curlSubmit.click(function() {
+      hostStatus.text("");
       preload.css('display', 'inline');
   });
   hostAddressElement.append(document.URL);

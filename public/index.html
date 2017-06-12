@@ -12,13 +12,17 @@
       <h1>Ping Pod</h1>
     </div>
     <div>
-      <form id="ping-form">
-        <input type="text" id="ping-input" placeholder="IP Address or Hostname">
-        <a href="#" id="ping-submit">Ping</a>
+      <form id="host-form">
+        <input type="text" id="host-input" placeholder="IP Address or Hostname">
+        <div>
+          <a href="#" id="ping-submit">Ping</a>
+          <a href="#" id="curl-submit">Curl</a>
+        </div>
       </form>
-      <img id="preload" src="images/loader.gif" style="display:none">
-      <p><h2 id="ping-status"></h2></p>
+
     </div>
+    <img id="preload" src="images/loader.gif" style="display:none">
+    <p><h2 id="host-status"></h2></p>
     <div>
       <p><h2 id="host-address"></h2></p>
     </div>
