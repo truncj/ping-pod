@@ -11,7 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-FROM busybox:ubuntu-14.04
+FROM alpine:latest
+RUN apk add --no-cache --update-cache bash
+RUN apk add --update-cache curl ca-certificates bash
 ADD ./public ./public
 ADD ./bin/main .
 CMD ["./main"]
